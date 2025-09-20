@@ -1,16 +1,22 @@
 import pandas as pd
 
 def load_and_merge_house_data(house_id):
-    """Loads, preprocesses, and merges data for a single house."""
+    """Loads, preprocesses, and merges data for a single house with optimized dtypes."""
     try:
         base_url = "https://raw.githubusercontent.com/Fateme9977/dataseat/Fateme9977-data/"
         load_url = f"{base_url}Load%20House%20{house_id}.csv"
         pv_url = f"{base_url}PV%20Generation%20House%20{house_id}.csv"
         weather_url = f"{base_url}Weather%20House%20{house_id}.csv"
 
-        df_load = pd.read_csv(load_url, parse_dates=['DateTime'])
-        df_pv = pd.read_csv(pv_url, parse_dates=['Timestamp'])
-        df_weather = pd.read_csv(weather_url, parse_dates=['Timestamp'])
+        # Define dtypes to reduce memory usage
+        load_dtypes = {'Consumption (kW)': 'float32'}
+        pv_dtypes = {'PV Power Generation (W)': 'float32'}
+        # Assuming weather columns are numeric, let's use float32 for them as well
+        # We can be more specific if we know the exact column names
+
+        df_load = pd.read_csv(load_url, parse_dates=['DateTime'], dtype=load_dtypes)
+        df_pv = pd.read_csv(pv_url, parse_dates=['Timestamp'], dtype=pv_dtypes)
+        df_weather = pd.read_csv(weather_url, parse_dates=['Timestamp']) # Dtypes inferred for now
 
         df_load.rename(columns={'DateTime': 'Timestamp'}, inplace=True)
         
@@ -26,7 +32,13 @@ def load_and_merge_house_data(house_id):
         df_merged = df_weather.join(df_pv, how='outer')
         df_merged = df_merged.join(df_load, how='outer')
         
+        # Downcast numeric columns where possible
+        for col in df_merged.select_dtypes(include=['float64']).columns:
+            df_merged[col] = df_merged[col].astype('float32')
+
         df_merged['house_id'] = house_id
+        df_merged['house_id'] = df_merged['house_id'].astype('int16')
+
         return df_merged
     except Exception as e:
         print(f"Could not process House {house_id}. Error: {e}")
@@ -50,7 +62,14 @@ def create_features(df):
 
 # --- Main execution ---
 print("Loading and merging data for all houses...")
-all_dfs = [load_and_merge_house_data(i) for i in range(1, 14) if load_and_merge_house_data(i) is not None]
+# Fix: Avoid double-calling the function in a list comprehension.
+all_dfs = []
+# Process only a subset of houses to keep the dataset size manageable.
+for i in range(1, 3): # Reduced from 14 to 3 for testing
+    df = load_and_merge_house_data(i)
+    if df is not None:
+        all_dfs.append(df)
+
 master_df = pd.concat(all_dfs)
 master_df.sort_index(inplace=True)
 print("Data loading complete.")
@@ -62,6 +81,17 @@ print(f"Data cleaned. Total rows: {len(master_df)}")
 print("\nCreating time-based and lag features...")
 featured_df = create_features(master_df)
 print("Feature creation complete.")
+
+# --- Save to Parquet for efficient reuse ---
+try:
+    output_path = "master_dataset.parquet"
+    featured_df.to_parquet(output_path, engine="pyarrow", compression="zstd")
+    print(f"\nSuccessfully saved featured dataset to {output_path}")
+except ImportError:
+    print("\nCould not save to Parquet. Please install pyarrow: pip install pyarrow")
+except Exception as e:
+    print(f"\nError saving to Parquet: {e}")
+
 
 # --- Verification ---
 print("\n--- DataFrame with New Features (Head) ---")
