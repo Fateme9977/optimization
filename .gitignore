@@ -1,0 +1,13 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Generated data and logs
+*.parquet
+*.csv
+codecarbon_logs/
+
+# Environment
+.venv/
+venv/
+env/

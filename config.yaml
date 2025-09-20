@@ -1,0 +1,44 @@
+# --- Experiment Configuration ---
+run_id: "initial_run_001"
+seed: 42
+
+# --- Dataset Configuration ---
+data_path: "master_dataset.parquet"
+house_ids: "all" # or a list like [1, 3, 5]
+
+# --- Model Configuration ---
+model_name: "EAMTF" # EAMTF, LSTM, GRU, etc.
+horizon_min: 15
+
+# Hyperparameters
+hyperparameters:
+  learning_rate: 0.001
+  batch_size: 64
+  epochs: 10
+
+# --- EAMTF Specific ---
+early_exit:
+  enabled: True
+  csi_threshold: 0.7
+  # other gating signal thresholds...
+
+quantization:
+  enabled: True
+  target: "shallow_head" # all, shallow_head
+
+retrieval:
+  enabled: True
+  k: 5
+
+lora:
+  enabled: True
+  rank: 8
+
+# --- System Configuration ---
+precision: "BF16" # FP32, BF16, FP16
+power_cap_W: "uncapped" # or 200, 150
+
+# --- Logging Configuration ---
+logging:
+  log_file: "experiment_logs.csv"
+  log_level: "INFO"
