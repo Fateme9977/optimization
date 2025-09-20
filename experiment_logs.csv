@@ -1,5 +1,0 @@
-run_id,timestamp,seed,house_id,model,dataset,horizon_min,batch_size,precision,early_exit,quantization,retrieval_k,power_cap_W,epochs,wall_clock_s,energy_Wh,energy_CPU_Wh,energy_GPU_Wh,mem_GB_peak,RMSE,MAE,R2,latency_ms_p50,latency_ms_p95,notes
-initial_run_001_sweep_0_20250920_073711,20250920_073711,42,all,EAMTF,SHEERM,15,64,BF16,True,shallow_head,5,uncapped,10,1.7342536759999803,N/A,1.1446417821928833e-05,N/A,N/A,,0.0,0.0,0.0,0.0,0.0,
-initial_run_001_sweep_1_20250920_073715,20250920_073715,42,all,EAMTF,SHEERM,15,64,BF16,False,shallow_head,5,uncapped,10,1.7095113959999253,N/A,1.1283413759585654e-05,N/A,N/A,,0.0,0.0,0.0,0.0,0.0,
-initial_run_001_sweep_2_20250920_073719,20250920_073719,42,all,EAMTF,SHEERM,15,64,BF16,True,shallow_head,5,uncapped,10,1.7311298509998778,N/A,1.1426095839999052e-05,N/A,N/A,,0.0,0.0,0.0,0.0,0.0,
-initial_run_001_sweep_3_20250920_073722,20250920_073722,42,all,EAMTF,SHEERM,15,64,FP32,True,shallow_head,5,uncapped,10,3.645450643999993,N/A,2.4061659436874354e-05,N/A,N/A,,0.0,0.0,0.0,0.0,0.0,
